@@ -1,0 +1,15 @@
+{
+  "name": "sourcecodespitter",
+  "version": "1.0.0",
+  "description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mohannad F. Otaibi",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.1.1",
+    "ignore": "^5.2.4"
+  }
+}
