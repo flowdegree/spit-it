@@ -1,12 +1,17 @@
 {
-  "name": "sourcecodespitter",
+  "name": "source-code-spitter",
   "version": "1.0.0",
   "description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
   "main": "index.js",
+  "bin": {
+    "source-code-spitter": "./index.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No tests specified\" && exit 0",
+    "start": "node index.js"
   },
   "author": "Mohannad F. Otaibi",
+  "keywords": ["source code", "dump", "generator", "command-line"],
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^11.1.1",
