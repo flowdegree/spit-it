@@ -1,10 +1,10 @@
 {
   "name": "@6degrees/source-code-spitter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
   "main": "index.js",
   "bin": {
-    "source-code-spitter": "./index.js"
+    "source-code-spitter": "node ./index.js"
   },
   "scripts": {
     "test": "echo \"No tests specified\" && exit 0",
@@ -29,5 +29,8 @@
   "dependencies": {
     "fs-extra": "^11.1.1",
     "ignore": "^5.2.4"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.1"
   }
 }

@@ -12,7 +12,9 @@ SourceCodeSpitter is a command-line tool that generates a single dump file conta
 ## Installation
 
 ```bash
-npm install -g source-code-spitter
+npm install -g @6degrees/source-code-spitter
+# or for local project only
+npm install @6degrees/source-code-spitter
 ```
 
 ## Usage
