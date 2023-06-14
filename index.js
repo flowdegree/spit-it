@@ -1,68 +1,96 @@
+#!/usr/bin/env node
+
+/**
+ * source-code-spitter
+ * A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.
+ *
+ * @author Mohannad F. Otaibi <https://www.mohannadotaibi.com>
+ */
 const fs = require('fs-extra');
 const path = require('path');
 const ignore = require('ignore');
+const init = require('./utils/init');
+const cli = require('./utils/cli');
+const log = require('./utils/log');
+const chalk = require('chalk');
 
-function traverseDirectory(dir, ig) {
-  const files = fs.readdirSync(dir);
-  const sourceCodeFiles = [];
+const input = cli.input;
+const flags = cli.flags;
+const { clear, debug } = flags;
 
-  files.forEach(file => {
-    const filePath = path.join(dir, file);
-    const stats = fs.statSync(filePath);
+const traverseDirectory = (dir, ig) => {
+	const files = fs.readdirSync(dir);
+	const sourceCodeFiles = [];
 
-    if (stats.isDirectory()) {
-      sourceCodeFiles.push(...traverseDirectory(filePath, ig)); // Recursively explore directories
-    } else {
-      const relativePath = path.relative(process.cwd(), filePath);
-      if (!ig.ignores(relativePath)) {
-        sourceCodeFiles.push(filePath);
-      }
-    }
-  });
+	files.forEach(file => {
+		const filePath = path.join(dir, file);
+		const stats = fs.statSync(filePath);
 
-  return sourceCodeFiles;
-}
+		if (stats.isDirectory()) {
+			sourceCodeFiles.push(...traverseDirectory(filePath, ig)); // Recursively explore directories
+		} else {
+			const relativePath = path.relative(process.cwd(), filePath);
+			if (!ig.ignores(relativePath)) {
+				sourceCodeFiles.push(filePath);
+			}
+		}
+	});
 
-function parseIgnoreFiles() {
-    const gitignorePath = path.join(process.cwd(), '.gitignore');
-    const spitignorePath = path.join(process.cwd(), '.spitignore');
-    const ig = ignore();
-  
-    if (fs.existsSync(gitignorePath)) {
-      ig.add(fs.readFileSync(gitignorePath, 'utf8'));
-    }
-  
-    if (fs.existsSync(spitignorePath)) {
-      ig.add(fs.readFileSync(spitignorePath, 'utf8'));
-    }
+	return sourceCodeFiles;
+};
 
-    ig.add([".git",".gitignore",".gitattributes","package-lock.json","*.md","source_code_dump.txt"]);
-  
-    return ig;
-  }
-  
-function generateSourceCodeDump(directory) {
-  const ig = parseIgnoreFiles();
-  const sourceCodeFiles = traverseDirectory(directory, ig);
-  const dumpFilePath = path.join(process.cwd(), 'source_code_dump.txt');
-  const dumpFileContent = [];
+const parseIgnoreFiles = () => {
+	const gitignorePath = path.join(process.cwd(), '.gitignore');
+	const spitignorePath = path.join(process.cwd(), '.spitignore');
+	const ig = ignore();
 
-  sourceCodeFiles.forEach(file => {
-    const relativePath = path.relative(process.cwd(), file).replace(/\\/g, '/');;
-    const fileContent = fs.readFileSync(file, 'utf8');
-    dumpFileContent.push(`// ${relativePath}\n${fileContent}`);
-  });
+	if (fs.existsSync(gitignorePath)) {
+		ig.add(fs.readFileSync(gitignorePath, 'utf8'));
+	}
 
-  fs.writeFileSync(dumpFilePath, dumpFileContent.join('\n\n'));
+	if (fs.existsSync(spitignorePath)) {
+		ig.add(fs.readFileSync(spitignorePath, 'utf8'));
+	}
 
-  console.log('Source code dump generated successfully.');
-}
+	ig.add(['.git', '.gitignore', '.gitattributes', 'package-lock.json', '*.md', 'source_code_dump.txt']);
 
-const directory = process.argv[2];
+	return ig;
+};
 
-if (!directory) {
-  console.error('Please provide the directory path as an argument.');
-  process.exit(1);
-}
+const generateSourceCodeDump = directory => {
+	const ig = parseIgnoreFiles();
+	const sourceCodeFiles = traverseDirectory(directory, ig);
+	
+	console.log(chalk.italic(`Found ${sourceCodeFiles.length} source code files.`));
+	const dumpFilePath = path.join(process.cwd(), 'source_code_dump.txt');
+	const dumpFileContent = [];
 
-generateSourceCodeDump(directory);
+	sourceCodeFiles.forEach(file => {
+		const relativePath = path.relative(process.cwd(), file).replace(/\\/g, '/');
+		const fileContent = fs.readFileSync(file, 'utf8');
+		dumpFileContent.push(`// ${relativePath}\n${fileContent}`);
+	});
+
+	fs.writeFileSync(dumpFilePath, dumpFileContent.join('\n\n'));
+
+	console.log(chalk.greenBright(`Source code dump generated successfully at ${dumpFilePath} \n\n`));
+};
+
+(async () => {
+	init({ clear });
+	//input.includes(`help`) && cli.showHelp(0);
+
+	debug && log(flags);
+
+	const directory = input[0];
+
+	console.log('Generating out file for directory: ' + directory );
+
+	if (!directory) {
+		console.error('Please provide the directory path as an argument.');
+		process.exit(1);
+	}
+
+	generateSourceCodeDump(directory);
+	//if(input.includes(''));
+})();
