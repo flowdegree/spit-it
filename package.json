@@ -1,33 +1,52 @@
 {
-  "name": "@6degrees/source-code-spitter",
-  "version": "1.0.2",
-  "description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
-  "main": "index.js",
-  "bin": {
-    "source-code-spitter": "index.js"
-  },
-  "scripts": {
-    "test": "echo \"No tests specified\" && exit 0",
-    "start": "node index.js"
-  },
-  "author": "Mohannad F. Otaibi",
-  "keywords": [
-    "source code",
-    "dump",
-    "generator",
-    "command-line"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/6degrees/SourceCodeSpitter.git"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "homepage": "https://github.com/6degrees/SourceCodeSpitter#readme",
-  "license": "MIT",
-  "dependencies": {
-    "fs-extra": "^11.1.1",
-    "ignore": "^5.2.4"
-  }
+	"name": "@6degrees/source-code-spitter",
+	"description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
+	"version": "1.1.0",
+	"license": "MIT",
+	"bin": {
+		"source-code-spitter": "index.js",
+		"spitit": "index.js"
+	},
+	"author": {
+		"name": "Mohannad F. Otaibi",
+		"email": "mohannad@6d.com.sa",
+		"url": "https://www.mohannadotaibi.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/6degrees/SourceCodeSpitter.git"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"homepage": "https://github.com/6degrees/SourceCodeSpitter#readme",
+	"keywords": [
+		"source-code-spitter",
+		"Mohannad F. Otaibi",
+		"source code",
+		"dump",
+		"generator",
+		"command-line"
+	],
+	"files": [
+		"index.js",
+		"utils"
+	],
+	"scripts": {
+		"format": "prettier --write \"./**/*.{js,json}\""
+	},
+	"dependencies": {
+		"chalk": "^4.1.2",
+		"cli-alerts": "^1.2.2",
+		"cli-handle-error": "^4.4.0",
+		"cli-handle-unhandled": "^1.1.1",
+		"cli-meow-help": "^3.1.0",
+		"cli-welcome": "^2.2.2",
+		"fs-extra": "^11.1.1",
+		"ignore": "^5.2.4",
+		"meow": "^9.0.0"
+	},
+	"devDependencies": {
+		"prettier": "^2.8.8"
+	}
 }

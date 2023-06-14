@@ -1,86 +1,301 @@
+// .changeset/config.json
+{
+  "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
+
+
+// .github/workflows/action.yml
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: Node.js Package
+
+on:
+  push:
+    branches:
+        - "**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm ci
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+
+// .prettierrc.json
+{
+	"trailingComma": "none",
+	"arrowParens": "avoid",
+	"singleQuote": true,
+	"printWidth": 200,
+	"useTabs": true,
+	"tabWidth": 4,
+	"semi": true
+}
+
+
+// .spitignore.example
+
+
 // index.js
+#!/usr/bin/env node
+
+/**
+ * source-code-spitter
+ * A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.
+ *
+ * @author Mohannad F. Otaibi <https://www.mohannadotaibi.com>
+ */
 const fs = require('fs-extra');
 const path = require('path');
 const ignore = require('ignore');
+const init = require('./utils/init');
+const cli = require('./utils/cli');
+const log = require('./utils/log');
+const chalk = require('chalk');
 
-function traverseDirectory(dir, ig) {
-  const files = fs.readdirSync(dir);
-  const sourceCodeFiles = [];
+const input = cli.input;
+const flags = cli.flags;
+const { clear, debug } = flags;
 
-  files.forEach(file => {
-    const filePath = path.join(dir, file);
-    const stats = fs.statSync(filePath);
+const traverseDirectory = (dir, ig) => {
+	const files = fs.readdirSync(dir);
+	const sourceCodeFiles = [];
 
-    if (stats.isDirectory()) {
-      sourceCodeFiles.push(...traverseDirectory(filePath, ig)); // Recursively explore directories
-    } else {
-      const relativePath = path.relative(process.cwd(), filePath);
-      if (!ig.ignores(relativePath)) {
-        sourceCodeFiles.push(filePath);
-      }
-    }
-  });
+	files.forEach(file => {
+		const filePath = path.join(dir, file);
+		const stats = fs.statSync(filePath);
 
-  return sourceCodeFiles;
-}
+		if (stats.isDirectory()) {
+			sourceCodeFiles.push(...traverseDirectory(filePath, ig)); // Recursively explore directories
+		} else {
+			const relativePath = path.relative(process.cwd(), filePath);
+			if (!ig.ignores(relativePath)) {
+				sourceCodeFiles.push(filePath);
+			}
+		}
+	});
 
-function parseIgnoreFiles() {
-    const gitignorePath = path.join(process.cwd(), '.gitignore');
-    const spitignorePath = path.join(process.cwd(), '.spitignore');
-    const ig = ignore();
-  
-    if (fs.existsSync(gitignorePath)) {
-      ig.add(fs.readFileSync(gitignorePath, 'utf8'));
-    }
-  
-    if (fs.existsSync(spitignorePath)) {
-      ig.add(fs.readFileSync(spitignorePath, 'utf8'));
-    }
+	return sourceCodeFiles;
+};
 
-    ig.add([".git",".gitignore",".gitattributes","package-lock.json","*.md","source_code_dump.txt"]);
-  
-    return ig;
-  }
-  
-function generateSourceCodeDump(directory) {
-  const ig = parseIgnoreFiles();
-  const sourceCodeFiles = traverseDirectory(directory, ig);
-  const dumpFilePath = path.join(process.cwd(), 'source_code_dump.txt');
-  const dumpFileContent = [];
+const parseIgnoreFiles = () => {
+	const gitignorePath = path.join(process.cwd(), '.gitignore');
+	const spitignorePath = path.join(process.cwd(), '.spitignore');
+	const ig = ignore();
 
-  sourceCodeFiles.forEach(file => {
-    const relativePath = path.relative(process.cwd(), file).replace(/\\/g, '/');;
-    const fileContent = fs.readFileSync(file, 'utf8');
-    dumpFileContent.push(`// ${relativePath}\n${fileContent}`);
-  });
+	if (fs.existsSync(gitignorePath)) {
+		ig.add(fs.readFileSync(gitignorePath, 'utf8'));
+	}
 
-  fs.writeFileSync(dumpFilePath, dumpFileContent.join('\n\n'));
+	if (fs.existsSync(spitignorePath)) {
+		ig.add(fs.readFileSync(spitignorePath, 'utf8'));
+	}
 
-  console.log('Source code dump generated successfully.');
-}
+	ig.add(['.git', '.gitignore', '.gitattributes', 'package-lock.json', '*.md', 'source_code_dump.txt']);
 
-const directory = process.argv[2];
-if (!directory) {
-  console.error('Please provide the directory path as an argument.');
-  process.exit(1);
-}
+	return ig;
+};
 
-generateSourceCodeDump(directory);
+const generateSourceCodeDump = directory => {
+	const ig = parseIgnoreFiles();
+	const sourceCodeFiles = traverseDirectory(directory, ig);
+	
+	console.log(chalk.italic(`Found ${sourceCodeFiles.length} source code files.`));
+	const dumpFilePath = path.join(process.cwd(), 'source_code_dump.txt');
+	const dumpFileContent = [];
+
+	sourceCodeFiles.forEach(file => {
+		const relativePath = path.relative(process.cwd(), file).replace(/\\/g, '/');
+		const fileContent = fs.readFileSync(file, 'utf8');
+		dumpFileContent.push(`// ${relativePath}\n${fileContent}`);
+	});
+
+	fs.writeFileSync(dumpFilePath, dumpFileContent.join('\n\n'));
+
+	console.log(chalk.greenBright(`Source code dump generated successfully at ${dumpFilePath} \n\n`));
+};
+
+(async () => {
+	init({ clear });
+	//input.includes(`help`) && cli.showHelp(0);
+
+	debug && log(flags);
+
+	const directory = input[0];
+
+	console.log('Generating out file for directory: ' + directory );
+
+	if (!directory) {
+		console.error('Please provide the directory path as an argument.');
+		process.exit(1);
+	}
+
+	generateSourceCodeDump(directory);
+	//if(input.includes(''));
+})();
 
 
 // package.json
 {
-  "name": "sourcecodespitter",
-  "version": "1.0.0",
-  "description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Mohannad F. Otaibi",
-  "license": "MIT",
-  "dependencies": {
-    "fs-extra": "^11.1.1",
-    "ignore": "^5.2.4"
-  }
+	"name": "@6degrees/source-code-spitter",
+	"description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
+	"version": "1.1.0",
+	"license": "MIT",
+	"bin": {
+		"source-code-spitter": "index.js",
+		"spitit": "index.js"
+	},
+	"author": {
+		"name": "Mohannad F. Otaibi",
+		"email": "mohannad@6d.com.sa",
+		"url": "https://www.mohannadotaibi.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/6degrees/SourceCodeSpitter.git"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"homepage": "https://github.com/6degrees/SourceCodeSpitter#readme",
+	"keywords": [
+		"source-code-spitter",
+		"Mohannad F. Otaibi",
+		"source code",
+		"dump",
+		"generator",
+		"command-line"
+	],
+	"files": [
+		"index.js",
+		"utils"
+	],
+	"scripts": {
+		"format": "prettier --write \"./**/*.{js,json}\""
+	},
+	"dependencies": {
+		"chalk": "^4.1.2",
+		"cli-alerts": "^1.2.2",
+		"cli-handle-error": "^4.4.0",
+		"cli-handle-unhandled": "^1.1.1",
+		"cli-meow-help": "^3.1.0",
+		"cli-welcome": "^2.2.2",
+		"fs-extra": "^11.1.1",
+		"ignore": "^5.2.4",
+		"meow": "^9.0.0"
+	},
+	"devDependencies": {
+		"prettier": "^2.8.8"
+	}
 }
+
+
+// utils/cli.js
+const meow = require('meow');
+const meowHelp = require('cli-meow-help');
+
+const flags = {
+	clear: {
+		type: `boolean`,
+		default: false,
+		alias: `c`,
+		desc: `Clear the console`
+	},
+	noClear: {
+		type: `boolean`,
+		default: false,
+		desc: `Don't clear the console`
+	},
+	debug: {
+		type: `boolean`,
+		default: false,
+		alias: `d`,
+		desc: `Print debug info`
+	},
+	version: {
+		type: `boolean`,
+		alias: `v`,
+		desc: `Print CLI version`
+	},
+	
+};
+
+const commands = {
+	help: { desc: `Print help info` }
+};
+
+const helpText = meowHelp({
+	name: `spitit`,
+	flags,
+	commands
+});
+
+const options = {
+	inferType: true,
+	description: false,
+	hardRejection: false,
+	flags
+};
+
+module.exports = meow(helpText, options);
+
+
+// utils/init.js
+const welcome = require('cli-welcome');
+const pkg = require('./../package.json');
+const unhandled = require('cli-handle-unhandled');
+
+module.exports = ({ clear = true }) => {
+	unhandled();
+	welcome({
+		title: `source-code-spitter`,
+		tagLine: `by Mohannad F. Otaibi`,
+		//description: pkg.description,
+		version: pkg.version,
+		bgColor: '#36BB09',
+		color: '#000000',
+		bold: true,
+		clear
+	});
+};
+
+
+// utils/log.js
+const alert = require('cli-alerts');
+
+module.exports = info => {
+	alert({
+		type: `warning`,
+		name: `DEBUG LOG`,
+		msg: ``
+	});
+
+	console.log(info);
+	console.log();
+};
