@@ -2,6 +2,8 @@
 
 SourceCodeSpitter is a command-line tool that generates a single dump file containing all the source code files within a directory, excluding files specified in `.gitignore` and `.spitignore`. This tool is useful for quickly collecting source code snippets for sharing or documentation purposes.
 
+![demonstration image](https://github.com/6degrees/SourceCodeSpitter/blob/master/Demo.gif)
+
 ## Features
 
 - Recursively traverses the specified directory to collect all source code files.
