@@ -1,5 +1,5 @@
 {
-  "name": "source-code-spitter",
+  "name": "@6degrees/source-code-spitter",
   "version": "1.0.0",
   "description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
   "main": "index.js",
@@ -11,7 +11,20 @@
     "start": "node index.js"
   },
   "author": "Mohannad F. Otaibi",
-  "keywords": ["source code", "dump", "generator", "command-line"],
+  "keywords": [
+    "source code",
+    "dump",
+    "generator",
+    "command-line"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/6degrees/SourceCodeSpitter.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/6degrees/SourceCodeSpitter#readme",
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^11.1.1",
