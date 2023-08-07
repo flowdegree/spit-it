@@ -14,6 +14,28 @@ const cli = require('./utils/cli');
 const log = require('./utils/log');
 const chalk = require('chalk');
 
+const DEFAULT_IGNORED_FILES = [
+	'.git', 
+	'.gitignore', 
+	'.gitattributes', 
+	'package-lock.json', 
+	'*.md', 
+	'source_code_dump.txt', 
+	'.changeset/',
+	'node_modules/',
+	'build/',
+	'coverage/',
+	'*.log',
+	'*.lock',
+	'node_modules',
+	'*.jpg',
+	'*.gif',
+	'.spitignore',
+	'.prettierrc.json',
+	'.prettierrc',
+	'.spitignore.example',
+];
+
 const input = cli.input;
 const flags = cli.flags;
 const { clear, debug } = flags;
@@ -52,7 +74,7 @@ const parseIgnoreFiles = () => {
 		ig.add(fs.readFileSync(spitignorePath, 'utf8'));
 	}
 
-	ig.add(['.git', '.gitignore', '.gitattributes', 'package-lock.json', '*.md', 'source_code_dump.txt']);
+	ig.add(DEFAULT_IGNORED_FILES);
 
 	return ig;
 };

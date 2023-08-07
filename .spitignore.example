@@ -1,0 +1,10 @@
+node_modules
+*.jpg
+*.gif
+.spitignore
+package-lock.json
+.changeset/
+.prettierrc.json
+.prettierrc
+.spitignore.example
+source_code_dump.txt
