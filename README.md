@@ -22,7 +22,15 @@ npm install @6degrees/source-code-spitter
 ## Usage
 
 ```bash
-source-code-spitter [directory]
+spitit [options] [directory]
+```
+
+### Options
+
+```bash
+-c, --clear: Clear the console.
+-i, --include <extensions>: Include only specific file types (comma-separated, e.g., .js,.css). Use this option to limit the extraction to certain file extensions.
+-e, --exclude <extensions>: Exclude specific file types (comma-separated, e.g., .log,.txt). Use this option to exclude certain file extensions from the extraction.
 ```
 
 Replace `[directory]` with the path to the directory you want to generate the source code dump for. If no directory is provided, it will default to the current working directory.
@@ -31,16 +39,28 @@ The tool will generate a `source_code_dump.txt` file in the same directory with 
 
 ## Examples
 
-Generate a source code dump for the current working directory:
+### Generate a source code dump for the current working directory:
 
 ```bash
-source-code-spitter
+spitit .
 ```
 
-Generate a source code dump for a specific directory:
+### Generate a source code dump for a specific directory:
 
 ```bash
 source-code-spitter /path/to/directory
+```
+
+### Extract only JavaScript and CSS files:
+
+```bash
+spitit --include .js,.css
+```
+
+### Extract all files except log and text files:
+
+```bash
+spitit --exclude .log,.txt
 ```
 
 ## Contributing

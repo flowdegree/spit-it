@@ -10,68 +10,54 @@ const fs = require('fs-extra');
 const path = require('path');
 const ignore = require('ignore');
 const chalk = require('chalk');
+const { Octokit } = require('@octokit/rest');
+
+const open = require('open');
 const init = require('./utils/init');
 const cli = require('./utils/cli');
 const log = require('./utils/log');
+const DEFAULT_IGNORED_FILES = require('./utils/ignore-config');
 
-const DEFAULT_IGNORED_FILES = [
-	'.git',
-	'.gitignore',
-	'.gitattributes',
-	'package-lock.json',
-	'*.md',
-	'source_code_dump.txt',
-	'.changeset/',
-	'node_modules/',
-	'build/',
-	'coverage/',
-	'*.log',
-	'*.lock',
-	'node_modules',
-	'*.jpg',
-	'*.gif',
-	'*.svg',
-	'*.png',
-	'*.ico',
-	'*.eot',
-	'*.ttf',
-	'*.woff',
-	'*.woff2',
-	'*.mp4',
-	'.vscode/',
-	'.idea/',
-	'.DS_Store',
-	'.env',
-	'.spitignore',
-	'.prettierrc.json',
-	'.prettierrc',
-	'.spitignore.example',
-];
+const clientId = 'f7ec24587e812f6ce928';
 
 const { input, flags } = cli;
-const { clear, debug } = flags;
+const { clear, debug, include, exclude } = flags;
 
+const includeExtensions = include ? include.split(',') : null;
+const excludeExtensions = exclude ? exclude.split(',') : null;
+
+
+// Function to traverse a directory and return source code files
 const traverseDirectory = (dir, ig) => {
-	const files = fs.readdirSync(dir);
-	const sourceCodeFiles = [];
+	try {
+		const files = fs.readdirSync(dir);
+    const sourceCodeFiles = [];
 
-	files.forEach(file => {
-		const filePath = path.join(dir, file);
-		const stats = fs.statSync(filePath);
+    files.forEach(file => {
+        const filePath = path.join(dir, file);
+        const stats = fs.statSync(filePath);
+        const fileExtension = path.extname(filePath);
 
-		if (stats.isDirectory()) {
-			sourceCodeFiles.push(...traverseDirectory(filePath, ig)); // Recursively explore directories
-		} else {
-			const relativePath = path.relative(process.cwd(), filePath);
-			if (!ig.ignores(relativePath)) {
-				sourceCodeFiles.push(filePath);
-			}
-		}
-	});
+        if (stats.isDirectory()) {
+            sourceCodeFiles.push(...traverseDirectory(filePath, ig));
+        } else if ((!includeExtensions || includeExtensions.includes(fileExtension)) &&
+                   (!excludeExtensions || !excludeExtensions.includes(fileExtension))) {
+            const relativePath = path.relative(process.cwd(), filePath);
+            if (!ig.ignores(relativePath)) {
+                sourceCodeFiles.push(filePath);
+            }
+        }
+    });
 
-	return sourceCodeFiles;
+    return sourceCodeFiles;
+
+	} catch (error) {
+		console.error(`An error occurred while traversing the directory ${dir}:`, error);
+		return [];
+	}
 };
 
+// Function to parse ignore files like .gitignore and .spitignore
 const parseIgnoreFiles = () => {
 	const gitignorePath = path.join(process.cwd(), '.gitignore');
 	const spitignorePath = path.join(process.cwd(), '.spitignore');
@@ -90,6 +76,28 @@ const parseIgnoreFiles = () => {
 	return ig;
 };
 
+// Todo: Function to create a GitHub Gist
+const createGist = async (code) => {
+	open(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist`);
+
+    const octokit = new Octokit({
+        auth: 'YOUR_PERSONAL_ACCESS_TOKEN', // You'll need to handle authentication
+    });
+
+    const response = await octokit.gists.create({
+        description: 'Extracted code snippet',
+        public: true,
+        files: {
+            'snippet.txt': {
+                content: code
+            }
+        }
+    });
+
+    return response.data.html_url;
+};
+
+// Function to generate a dump of source code from a directory
 const generateSourceCodeDump = directory => {
 	const ig = parseIgnoreFiles();
 	const sourceCodeFiles = traverseDirectory(directory, ig);
@@ -106,9 +114,20 @@ const generateSourceCodeDump = directory => {
 
 	fs.writeFileSync(dumpFilePath, dumpFileContent.join('\n\n'));
 
+	if (flags.gist) {
+		// this function still needs to be implement3ed
+		console.log('Gist feature is not implemented yet.');
+        // createGist(dumpFileContent.join('\n\n')).then(gistUrl => {
+        //     console.log(`Gist created: ${gistUrl}`);
+        // }).catch(error => {
+        //     console.error('Failed to create gist:', error);
+        // });
+    }
+
 	console.log(chalk.greenBright(`Source code dump generated successfully at ${dumpFilePath} \n\n`));
 };
 
+// Main async function to initialize and generate the source code dump
 (async () => {
 	init({ clear });
 

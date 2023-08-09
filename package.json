@@ -37,25 +37,27 @@
 	},
 	"dependencies": {
 		"@changesets/cli": "^2.26.2",
+		"@octokit/rest": "^20.0.1",
 		"chalk": "^4.1.2",
 		"cli-alerts": "^1.2.2",
 		"cli-handle-error": "^4.4.0",
 		"cli-handle-unhandled": "^1.1.1",
 		"cli-meow-help": "^3.1.0",
 		"cli-welcome": "^2.2.2",
-		"eslint-config-prettier": "^9.0.0",
-		"eslint-plugin-prettier": "^5.0.0",
 		"fs-extra": "^11.1.1",
 		"ignore": "^5.2.4",
 		"meow": "^9.0.0",
-		"prettier": "^3.0.1"
+		"open": "^9.1.0"
 	},
 	"devDependencies": {
 		"eslint": "^8.2.0",
 		"eslint-config-airbnb": "^19.0.4",
+		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-import": "^2.25.3",
 		"eslint-plugin-jsx-a11y": "^6.5.1",
+		"eslint-plugin-prettier": "^5.0.0",
 		"eslint-plugin-react": "^7.28.0",
-		"eslint-plugin-react-hooks": "^4.3.0"
+		"eslint-plugin-react-hooks": "^4.3.0",
+		"prettier": "^3.0.1"
 	}
 }

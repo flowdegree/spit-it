@@ -8,9 +8,12 @@ module.exports = {
         ecmaVersion: 12,
         sourceType: 'module',
     },
-    plugins: ["prettier"],
+    plugins: ['prettier'],
 
     rules: {
         indent: 'off',
+        quotes: ['error', 'single'],
+        'no-var': 'error',
+        'no-console:': 'off',
     },
 };
