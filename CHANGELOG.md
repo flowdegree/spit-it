@@ -1,5 +1,11 @@
 # @6degrees/source-code-spitter
 
+## 1.3.1
+
+### Patch Changes
+
+-   more extensions
+
 ## 1.3.0
 
 ### Minor Changes
