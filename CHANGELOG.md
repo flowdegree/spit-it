@@ -1,5 +1,29 @@
 # @6degrees/source-code-spitter
 
+## 2.0.0
+
+### Major Changes
+
+-   960e4e1: # Include, Exclude flags and more 🔥🔥🔥
+
+    ## Breaking Changes
+
+    -   None
+
+    ## Changes
+
+    -   Adding include and exclude flags, checkout [README.md](./readme)
+    -   Updated `README.md` and added comments to the code
+    -   Moved the default ignores to `utils/ignore-config.js`
+    -   Updated the Github Action
+    -   Added linting
+
+    ## to update
+
+    ```bash
+    npm update "@6degrees/source-code-spitter"
+    ```
+
 ## 1.3.1
 
 ### Patch Changes
