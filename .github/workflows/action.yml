@@ -45,9 +45,6 @@ jobs:
           git commit -m "chore: Bump versions" || echo "No changes to commit"
           git push
 
-      - name: Build
-        run: npm run ci
-
       - name: Publish to npm
         run: npm publish
         env:
