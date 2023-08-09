@@ -9,18 +9,18 @@
 const fs = require('fs-extra');
 const path = require('path');
 const ignore = require('ignore');
+const chalk = require('chalk');
 const init = require('./utils/init');
 const cli = require('./utils/cli');
 const log = require('./utils/log');
-const chalk = require('chalk');
 
 const DEFAULT_IGNORED_FILES = [
-	'.git', 
-	'.gitignore', 
-	'.gitattributes', 
-	'package-lock.json', 
-	'*.md', 
-	'source_code_dump.txt', 
+	'.git',
+	'.gitignore',
+	'.gitattributes',
+	'package-lock.json',
+	'*.md',
+	'source_code_dump.txt',
 	'.changeset/',
 	'node_modules/',
 	'build/',
@@ -48,8 +48,7 @@ const DEFAULT_IGNORED_FILES = [
 	'.spitignore.example',
 ];
 
-const input = cli.input;
-const flags = cli.flags;
+const { input, flags } = cli;
 const { clear, debug } = flags;
 
 const traverseDirectory = (dir, ig) => {
@@ -94,7 +93,7 @@ const parseIgnoreFiles = () => {
 const generateSourceCodeDump = directory => {
 	const ig = parseIgnoreFiles();
 	const sourceCodeFiles = traverseDirectory(directory, ig);
-	
+
 	console.log(chalk.italic(`Found ${sourceCodeFiles.length} source code files.`));
 	const dumpFilePath = path.join(process.cwd(), 'source_code_dump.txt');
 	const dumpFileContent = [];
@@ -112,13 +111,13 @@ const generateSourceCodeDump = directory => {
 
 (async () => {
 	init({ clear });
-	//input.includes(`help`) && cli.showHelp(0);
 
+	// eslint-disable-next-line no-unused-expressions
 	debug && log(flags);
 
 	const directory = input[0];
 
-	console.log('Generating out file for directory: ' + directory );
+	console.log(`Generating out file for directory: ${directory}`);
 
 	if (!directory) {
 		console.error('Please provide the directory path as an argument.');
@@ -126,5 +125,4 @@ const generateSourceCodeDump = directory => {
 	}
 
 	generateSourceCodeDump(directory);
-	//if(input.includes(''));
 })();
