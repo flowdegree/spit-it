@@ -1,5 +1,11 @@
 # @6degrees/source-code-spitter
 
+## 2.0.3
+
+### Patch Changes
+
+-   Removing open and github stuff
+
 ## 2.0.0
 
 ### Major Changes

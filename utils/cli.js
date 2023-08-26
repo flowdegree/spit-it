@@ -40,7 +40,7 @@ const flags = {
         alias: 'g',
         desc: 'Share the extracted code as a GitHub Gist'
     },
-
+	
 };
 
 const commands = {

@@ -10,15 +10,15 @@ const fs = require('fs-extra');
 const path = require('path');
 const ignore = require('ignore');
 const chalk = require('chalk');
-const { Octokit } = require('@octokit/rest');
+// const { Octokit } = require('@octokit/rest');
 
-const open = require('open');
+// const open = require('open');
 const init = require('./utils/init');
 const cli = require('./utils/cli');
 const log = require('./utils/log');
 const DEFAULT_IGNORED_FILES = require('./utils/ignore-config');
 
-const clientId = 'f7ec24587e812f6ce928';
+// const clientId = 'f7ec24587e812f6ce928';
 
 const { input, flags } = cli;
 const { clear, debug, include, exclude } = flags;
@@ -77,25 +77,25 @@ const parseIgnoreFiles = () => {
 };
 
 // Todo: Function to create a GitHub Gist
-const createGist = async (code) => {
-	open(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist`);
+// const createGist = async (code) => {
+// 	open(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist`);
 
-    const octokit = new Octokit({
-        auth: 'YOUR_PERSONAL_ACCESS_TOKEN', // You'll need to handle authentication
-    });
+//     const octokit = new Octokit({
+//         auth: 'YOUR_PERSONAL_ACCESS_TOKEN', // You'll need to handle authentication
+//     });
 
-    const response = await octokit.gists.create({
-        description: 'Extracted code snippet',
-        public: true,
-        files: {
-            'snippet.txt': {
-                content: code
-            }
-        }
-    });
+//     const response = await octokit.gists.create({
+//         description: 'Extracted code snippet',
+//         public: true,
+//         files: {
+//             'snippet.txt': {
+//                 content: code
+//             }
+//         }
+//     });
 
-    return response.data.html_url;
-};
+//     return response.data.html_url;
+// };
 
 // Function to generate a dump of source code from a directory
 const generateSourceCodeDump = directory => {
