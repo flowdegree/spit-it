@@ -10,18 +10,18 @@ const fs = require('fs-extra');
 const path = require('path');
 const ignore = require('ignore');
 const chalk = require('chalk');
-// const { Octokit } = require('@octokit/rest');
-
-// const open = require('open');
 const init = require('./utils/init');
 const cli = require('./utils/cli');
 const log = require('./utils/log');
+// const { Octokit } = require('@octokit/rest');
+// const open = require('open');
+
 const DEFAULT_IGNORED_FILES = require('./utils/ignore-config');
 
 // const clientId = 'f7ec24587e812f6ce928';
 
 const { input, flags } = cli;
-const { clear, debug, include, exclude } = flags;
+const { clear, debug, include, exclude, json } = flags;
 
 const includeExtensions = include ? include.split(',') : null;
 const excludeExtensions = exclude ? exclude.split(',') : null;
@@ -31,25 +31,25 @@ const excludeExtensions = exclude ? exclude.split(',') : null;
 const traverseDirectory = (dir, ig) => {
 	try {
 		const files = fs.readdirSync(dir);
-    const sourceCodeFiles = [];
+    	const sourceCodeFiles = [];
 
-    files.forEach(file => {
-        const filePath = path.join(dir, file);
-        const stats = fs.statSync(filePath);
-        const fileExtension = path.extname(filePath);
+		files.forEach(file => {
+			const filePath = path.join(dir, file);
+			const stats = fs.statSync(filePath);
+			const fileExtension = path.extname(filePath);
 
-        if (stats.isDirectory()) {
-            sourceCodeFiles.push(...traverseDirectory(filePath, ig));
-        } else if ((!includeExtensions || includeExtensions.includes(fileExtension)) &&
-                   (!excludeExtensions || !excludeExtensions.includes(fileExtension))) {
-            const relativePath = path.relative(process.cwd(), filePath);
-            if (!ig.ignores(relativePath)) {
-                sourceCodeFiles.push(filePath);
-            }
-        }
-    });
+			if (stats.isDirectory()) {
+				sourceCodeFiles.push(...traverseDirectory(filePath, ig));
+			} else if ((!includeExtensions || includeExtensions.includes(fileExtension)) &&
+					(!excludeExtensions || !excludeExtensions.includes(fileExtension))) {
+				const relativePath = path.relative(process.cwd(), filePath);
+				if (!ig.ignores(relativePath)) {
+					sourceCodeFiles.push(filePath);
+				}
+			}
+		});
 
-    return sourceCodeFiles;
+    	return sourceCodeFiles;
 
 	} catch (error) {
 		console.error(`An error occurred while traversing the directory ${dir}:`, error);
@@ -97,34 +97,45 @@ const parseIgnoreFiles = () => {
 //     return response.data.html_url;
 // };
 
+
 // Function to generate a dump of source code from a directory
 const generateSourceCodeDump = directory => {
-	const ig = parseIgnoreFiles();
-	const sourceCodeFiles = traverseDirectory(directory, ig);
+	try{
+		const ignoreHandler  = parseIgnoreFiles();
+		const sourceCodeFiles = traverseDirectory(directory, ignoreHandler );
 
-	console.log(chalk.italic(`Found ${sourceCodeFiles.length} source code files.`));
-	const dumpFilePath = path.join(process.cwd(), 'source_code_dump.txt');
-	const dumpFileContent = [];
+		console.log(chalk.italic(`Found ${sourceCodeFiles.length} source code files.`));
+		const dumpFilePath = path.join(process.cwd(), `dump${json ? '.json' : '.txt'}`);
+		
+		const dumpFileContent = [];
+		
+		sourceCodeFiles.forEach(file => {
+			const relativePath = path.relative(process.cwd(), file).replace(/\\/g, '/');
+			const fileContent = fs.readFileSync(file, 'utf8');
+			dumpFileContent.push({path: relativePath, content: fileContent});
+		});
 
-	sourceCodeFiles.forEach(file => {
-		const relativePath = path.relative(process.cwd(), file).replace(/\\/g, '/');
-		const fileContent = fs.readFileSync(file, 'utf8');
-		dumpFileContent.push(`// ${relativePath}\n${fileContent}`);
-	});
+		if (json) {  // Check if JSON flag is set
+			dumpFileContent = dumpFileContent.map(item => ({
+				path: item.path,
+				content: item.content.replace(/\r\n/g, '\n').replace(/\t/g, '').replace(/ +/g, ' ').replace(/\n\n/g, '\n')
+			}));
 
-	fs.writeFileSync(dumpFilePath, dumpFileContent.join('\n\n'));
+			
+			fs.writeFileSync(dumpFilePath, JSON.stringify(dumpFileContent, null, 2));
+		} else {
+			const textOutput = dumpFileContent.map(item => `// ${item.path}\n${item.content}`).join('\n\n');
+			fs.writeFileSync(dumpFilePath, textOutput);
+		}
+		console.log(chalk.greenBright(`Source code dump generated successfully at ${dumpFilePath} \n\n`));
 
-	if (flags.gist) {
-		// this function still needs to be implement3ed
-		console.log('Gist feature is not implemented yet.');
-        // createGist(dumpFileContent.join('\n\n')).then(gistUrl => {
-        //     console.log(`Gist created: ${gistUrl}`);
-        // }).catch(error => {
-        //     console.error('Failed to create gist:', error);
-        // });
-    }
+		// fs.writeFileSync(dumpFilePath + dumpFileExt, dumpFileContent.join('\n\n'));
+		
+	}catch(error){
+		console.error(`An error occurred: ${error}`);
+	}
 
-	console.log(chalk.greenBright(`Source code dump generated successfully at ${dumpFilePath} \n\n`));
+	
 };
 
 // Main async function to initialize and generate the source code dump
@@ -133,15 +144,14 @@ const generateSourceCodeDump = directory => {
 
 	// eslint-disable-next-line no-unused-expressions
 	debug && log(flags);
+	
+	console.log(`Generating out file for directory: ${input[0]}`);
+	
 
-	const directory = input[0];
-
-	console.log(`Generating out file for directory: ${directory}`);
-
-	if (!directory) {
+	if (!input[0]) {
 		console.error('Please provide the directory path as an argument.');
 		process.exit(1);
 	}
 
-	generateSourceCodeDump(directory);
+	generateSourceCodeDump(input[0]);
 })();

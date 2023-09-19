@@ -1,5 +1,17 @@
 # @6degrees/source-code-spitter
 
+## 2.1.0
+
+### Minor Changes
+
+-   # 💘 Adding support for json output
+
+    `spitit . --json`
+    or
+    `spitit . -j`
+    or
+    `node index.js . --json`
+
 ## 2.0.3
 
 ### Patch Changes
