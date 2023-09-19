@@ -1,7 +1,7 @@
 {
 	"name": "@6degrees/source-code-spitter",
 	"description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"license": "MIT",
 	"bin": {
 		"source-code-spitter": "index.js",

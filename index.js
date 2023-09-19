@@ -107,7 +107,7 @@ const generateSourceCodeDump = directory => {
 		console.log(chalk.italic(`Found ${sourceCodeFiles.length} source code files.`));
 		const dumpFilePath = path.join(process.cwd(), `dump${json ? '.json' : '.txt'}`);
 		
-		const dumpFileContent = [];
+		let dumpFileContent = [];
 		
 		sourceCodeFiles.forEach(file => {
 			const relativePath = path.relative(process.cwd(), file).replace(/\\/g, '/');

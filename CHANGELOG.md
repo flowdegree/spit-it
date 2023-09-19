@@ -1,5 +1,11 @@
 # @6degrees/source-code-spitter
 
+## 2.1.1
+
+### Patch Changes
+
+-   const -- let
+
 ## 2.1.0
 
 ### Minor Changes
