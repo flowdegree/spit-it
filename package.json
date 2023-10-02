@@ -1,11 +1,12 @@
 {
-	"name": "@6degrees/source-code-spitter",
+	"name": "@flowdegree/spit-it",
 	"description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
-	"version": "2.1.1",
+	"version": "2.2.0",
 	"license": "MIT",
 	"bin": {
 		"source-code-spitter": "index.js",
-		"spitit": "index.js"
+		"spitit": "index.js",
+		"spit-it": "index.js"
 	},
 	"author": {
 		"name": "Mohannad F. Otaibi",
@@ -14,12 +15,12 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/6degrees/SourceCodeSpitter.git"
+		"url": "git+https://github.com/flowdegree/spit-it.git"
 	},
 	"publishConfig": {
 		"access": "public"
 	},
-	"homepage": "https://github.com/6degrees/SourceCodeSpitter#readme",
+	"homepage": "https://github.com/flowdegree/spit-it#readme",
 	"keywords": [
 		"source-code-spitter",
 		"Mohannad F. Otaibi",

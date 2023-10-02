@@ -1,5 +1,11 @@
 # @6degrees/source-code-spitter
 
+## 2.2.0
+
+### Minor Changes
+
+-   move to @flowdegree
+
 ## 2.1.1
 
 ### Patch Changes
