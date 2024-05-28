@@ -1,4 +1,5 @@
 module.exports = [
+    /* common */
     '.git',
     '.gitignore',
     '.gitattributes',
@@ -12,6 +13,7 @@ module.exports = [
     '*.log',
     '*.lock',
     'node_modules',
+    /* media */
     '*.jpg',
     '*.jpeg',
     '*.gif',
@@ -35,6 +37,7 @@ module.exports = [
     '*.7z',
     '*.exe',
     '*.swf',
+    /* config */
     '.vscode/',
     '.idea/',
     '.DS_Store',
@@ -42,6 +45,11 @@ module.exports = [
     '.spitignore',
     '.prettierrc.json',
     '.prettierrc',
+    '.eslintrc.json',
+    '.eslintrc',
+    
     '.spitignore.example',
     'pnpm-lock.yaml',
+    'bun.lockb',
+
 ];

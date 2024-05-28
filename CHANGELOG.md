@@ -1,5 +1,11 @@
 # @6degrees/source-code-spitter
 
+## 2.3.0
+
+### Minor Changes
+
+-   Add Extensions for bun
+
 ## 2.2.0
 
 ### Minor Changes

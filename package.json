@@ -1,7 +1,7 @@
 {
 	"name": "@flowdegree/spit-it",
 	"description": "A command-line tool to extract and organize source code snippets from projects, enabling easy sharing and collaboration.",
-	"version": "2.2.0",
+	"version": "2.3.0",
 	"license": "MIT",
 	"bin": {
 		"source-code-spitter": "index.js",
